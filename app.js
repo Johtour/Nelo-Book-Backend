@@ -1,26 +1,16 @@
 const express = require('express');
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize(
-    'nelo_book',
-    'root',
-    '',
-    {
-        host:'localhost',
-        dialect:'mysql'
-    }
-)
 const app = express();
 const port = 3133;
+const db = require('./models');
+app.use(express.json());
 
-sequelize.authenticate().then(()=>{
-    console.log('Conection with base OK');
+db.sequelize.sync().then(()=>{
+    console.log('synced');
 }).catch((error)=>{
-    console.error('error connecting to database: ', error);
-})
-
-app.get('/',(req,resp)=>{    
-    resp.send('hello world');
+    console.error(error.message);
 });
+
+require('./routes/user.routes')(app);
 
 app.listen(port,()=>{
     console.log('all good');
